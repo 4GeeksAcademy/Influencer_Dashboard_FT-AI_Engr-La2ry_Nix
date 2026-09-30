@@ -9,6 +9,7 @@ except ImportError:
 import os, subprocess
 
 static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), './')
+public_file_dir = os.path.join(static_file_dir, 'public')
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #disable cache
 
@@ -22,15 +23,23 @@ def serve_dir_directory_index():
         return stdout if out.returncode == 0 else f"<pre style='color: red;'>{stdout.decode('utf-8')}</pre>"
     if os.path.exists("index.html"):
         return send_from_directory(static_file_dir, 'index.html')
+    if os.path.isfile(os.path.join(public_file_dir, 'index.html')):
+        return send_from_directory(public_file_dir, 'index.html')
     else:
         return "<h1 align='center'>404</h1><h2 align='center'>Missing index.html file</h2><p align='center'><img src='https://github.com/4GeeksAcademy/html-hello/blob/main/.vscode/rigo-baby.jpeg?raw=true' /></p>"
 
 # Serving any other image
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
-    if not os.path.isfile(os.path.join(static_file_dir, path)):
+    if os.path.isfile(os.path.join(public_file_dir, path)):
+        directory = public_file_dir
+    elif os.path.isfile(os.path.join(static_file_dir, path)):
+        directory = static_file_dir
+    else:
         path = os.path.join(path, 'index.html')
-    response = send_from_directory(static_file_dir, path)
+        directory = public_file_dir if os.path.isfile(os.path.join(public_file_dir, path)) else static_file_dir
+
+    response = send_from_directory(directory, path)
     response.cache_control.max_age = 0 # avoid cache memory
     return response
 
