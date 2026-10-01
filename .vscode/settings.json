@@ -3,5 +3,13 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "workbench.editorAssociations": {   
         "*.md": "vscode.markdown.preview.editor"
+    },
+    "remote.autoForwardPorts": true,
+    "remote.autoForwardPortsSource": "hybrid",
+    "remote.portsAttributes": {
+        "3000": {
+            "label": "Influencer Dashboard",
+            "onAutoForward": "openBrowser"
+        }
     }
 }
